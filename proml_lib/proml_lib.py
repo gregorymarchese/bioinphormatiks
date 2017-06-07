@@ -36,5 +36,3 @@ def getURL(URL):
             break
         time.sleep(10)
     return request
-
-updateJobConfig(18,'completed')
