@@ -105,11 +105,12 @@ def preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, m
     placeholder_array = [0 for a in range(int(math.pow(4, k)))]
     length = len(kmers_dict)
     i = 0
+    ids = []
     for id in kmers_dict:
         print("processing " + str(i) + " of " + str(length))
         i = i + 1
         kmers = kmers_dict[id]
-
+        ids.append(id)
         one_hot_kmer_for_id = []
         for j in range(0,len(kmers)):
             one_hot_kmer = []
@@ -125,7 +126,7 @@ def preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, m
         train_data.append(one_hot_kmer_for_id)
         train_activities.append(activities_dict[id])
     print("shape is: " + str(np.shape(train_data)))
-    return np.array(train_data), np.array(train_activities).reshape(len(input_seq_dict),1,1)
+    return ids, np.array(train_data), np.array(train_activities).reshape(len(input_seq_dict),1,1)
 
 
 def main(args):
@@ -193,8 +194,8 @@ def main(args):
             max_length = length
 
     print("max length is: " + str(max_length))
-    train_data, train_activities = preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, max_length)
-    test_data, test_activities = preprocess_data(k,w,test_promoters_dict, one_hot_dictionary, test_activites_dict,
+    ids, train_data, train_activities = preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, max_length)
+    ids, test_data, test_activities = preprocess_data(k,w,test_promoters_dict, one_hot_dictionary, test_activites_dict,
                                                      max_length)
 
 
@@ -206,7 +207,7 @@ def main(args):
 
     model = tp.convolutional_neural_network(train_data, train_activities, depth)
 
-    tp.test_data(test_data, test_activities, model)
+    tp.test_data(test_data, test_activities, model, ids)
 
 
 

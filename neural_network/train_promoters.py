@@ -8,8 +8,11 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers import BatchNormalization
-from keras.utils import plot_model
+from keras.layers import Activation
+from keras.utils.vis_utils import plot_model
 import pandas as pd
+from keras.optimizers import SGD
+import pydot_ng
 
 
 
@@ -35,29 +38,33 @@ def convolutional_neural_network(train_data, train_activities, depth):
     model = Sequential()
     model.add(Conv1D(filters=100, kernel_size=20, padding="valid", activation="relu", input_shape=(None, depth)))
     model.add(BatchNormalization())
-    model.add(Conv1D(filters=1000, kernel_size=20, padding="valid", activation="relu"))
+    model.add(Conv1D(filters=200, kernel_size=20, padding="valid", activation="relu"))
+    model.add(MaxPooling1D(pool_size=40, strides=40))
     model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=15, strides=15))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.2))
     model.add(Dense(1))
 
 
-    model.compile(loss='mean_absolute_error', optimizer='rmsprop')
+    sdg = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss='mse', optimizer='adam')
     print("Training....")
-    hist = model.fit(train_data, train_activities, batch_size=100, epochs=30, shuffle=True)
+    hist = model.fit(train_data, train_activities, batch_size=100, epochs=2, shuffle=True)
     print(hist.history)
 
     return model
 
-def test_data(test_data, test_activities, model):
+def test_data(test_data, test_activities, model, ids):
+    print(pydot_ng.find_graphviz())
     plot_model(model, to_file='model.png')
     test = model.evaluate(test_data, test_activities, batch_size = 26, verbose=1, sample_weight=None)
 
-    for metric in model.metric_names:
-        print("metric is: " + str(metric))
+    print("score is: " + str(test))
 
-    print("score is:  " + str(test))
+    test_results = model.predict(test_data, batch_size=32)
+    result = test_results[:,0]
 
+    for i, pred in enumerate(result):
+        print(str(ids[i]) + "\t" + str(pred) )
 
 
 
