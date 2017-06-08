@@ -178,36 +178,39 @@ def main(args):
 
     input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq, activities)
 
-    one_hot_dictionary = create_dictionary(k)
-
+    # one_hot_dictionary = create_dictionary(k)
+    #
     test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq, test_promoters_activites)
+    #
+    # max_length = 0
+    # for promoter in input_seq_dict:
+    #     length = len(input_seq_dict[promoter]) - k + 1
+    #     if length > max_length:
+    #         max_length = length
+    #
+    # for promoter in test_promoters_dict:
+    #     length = len(test_promoters_dict[promoter]) - k + 1
+    #     if length > max_length:
+    #         max_length = length
+    #
+    # print("max length is: " + str(max_length))
+    # ids, train_data, train_activities = preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, max_length)
+    # ids, test_data, test_activities = preprocess_data(k,w,test_promoters_dict, one_hot_dictionary, test_activites_dict,
+    #                                                  max_length)
+    #
+    #
+    #
+    #
+    # width = np.shape(train_data[0])[0]
 
-    max_length = 0
-    for promoter in input_seq_dict:
-        length = len(input_seq_dict[promoter]) - k + 1
-        if length > max_length:
-            max_length = length
 
-    for promoter in test_promoters_dict:
-        length = len(test_promoters_dict[promoter]) - k + 1
-        if length > max_length:
-            max_length = length
-
-    print("max length is: " + str(max_length))
-    ids, train_data, train_activities = preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, max_length)
-    ids, test_data, test_activities = preprocess_data(k,w,test_promoters_dict, one_hot_dictionary, test_activites_dict,
-                                                     max_length)
-
-
-
-
-    width = np.shape(train_data[0])[0]
+    train_data, train_activities, test_data, test_activities = tp.process_data(input_seq_dict, activities_dict,
+                                                                               test_promoters_dict, test_activites_dict)
     depth = np.shape(train_data[0])[1]
-
-
+    print("depth is: " + str(depth))
     model = tp.convolutional_neural_network(train_data, train_activities, depth)
 
-    tp.test_data(test_data, test_activities, model, ids)
+    tp.test_data(test_data, test_activities, model)
 
 
 
