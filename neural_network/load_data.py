@@ -204,13 +204,13 @@ def main(args):
     # width = np.shape(train_data[0])[0]
 
 
-    train_data, train_activities, test_data, test_activities = tp.process_data(input_seq_dict, activities_dict,
+    train_data, train_activities, test_data, test_activities, test_ids = tp.process_data(input_seq_dict, activities_dict,
                                                                                test_promoters_dict, test_activites_dict)
     depth = np.shape(train_data[0])[1]
     print("depth is: " + str(depth))
     model = tp.convolutional_neural_network(train_data, train_activities, depth)
 
-    tp.test_data(test_data, test_activities, model)
+    tp.test_data(test_data, test_activities, model, test_ids)
 
 
 
