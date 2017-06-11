@@ -10,7 +10,10 @@ from keras.layers import MaxPooling1D
 from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.regularizers import l2
+from keras.utils import plot_model
 from keras.utils.np_utils import to_categorical
+import pydot_ng as pydot_ng
+
 
 import proml_lib as proml_lib
 
@@ -67,9 +70,10 @@ def convolutional_neural_network(train_data, train_activities, depth, job_number
     print("Building model....")
 
     model = Sequential()
-    model.add(Convolution1D(filters=600, kernel_size=4, padding='valid', activation='relu', subsample_length=1,
+    model.add(Convolution1D(filters=100, kernel_size=4, padding='valid', activation='relu', subsample_length=1,
                             input_shape=(np.shape(train_data)[1],4),
                             activity_regularizer=l2(0.01)))
+    model.add(Convolution1D(filters=200, kernel_size=4, padding='valid', activation='relu', activity_regularizer=l2(0.01)))
 
     model.add(MaxPooling1D(pool_size=30, strides=30))
     model.add(BatchNormalization())
@@ -83,7 +87,7 @@ def convolutional_neural_network(train_data, train_activities, depth, job_number
     print("Training....")
     proml_lib.updateJobConfig(job_number, 'model_train')
     proml_lib.sendMessage(job_number, 'model_train')
-    hist = model.fit(train_data, train_activities, batch_size=20, epochs=100, shuffle=True)
+    hist = model.fit(train_data, train_activities, batch_size=10, epochs=150, shuffle=True)
     print(hist.history)
 
     loss_array = hist.history
@@ -105,22 +109,22 @@ def output_files(loss_array, predictions, loss_output_file_name, pred_output_fil
     loss_output_file = open(loss_output_file_name, "w+")
     pred_output_file = open(pred_output_file_name, "w+")
 
-    loss_output_file.write("epoch" + "\t" + "categorical crossentropy loss")
+    loss_output_file.write("epoch" + "\t" + "categorical crossentropy loss" + "\n")
 
-    for i in range(len(loss_array)):
-        loss_output_file.write(str(i) + "\t" + str(loss_array[i]))
+    for i in range(len(loss_array['loss'])):
+        loss_output_file.write(str(i) + "\t" + str(loss_array['loss'][i]) + "\n")
 
-    pred_output_file.write("Promoter" + "\t" + "Predicted Expression")
+    pred_output_file.write("Promoter" + "\t" + "Predicted Expression" + "\n")
     for id in predictions:
-        pred_output_file.write(str(id) + "\t" + str(predictions[id]))
+        pred_output_file.write(str(id) + "\t" + str(predictions[id]) + "\n")
 
     proml_lib.sendMessage(job_number, 'complete')
 
 
 
 def test_data(test_data, test_activities, model, test_ids, job_number):
-    # print(pydot_ng.find_graphviz())
-    # plot_model(model, to_file='model.png')
+    print(pydot_ng.find_graphviz())
+    plot_model(model, to_file='model.png')
     test = model.evaluate(test_data, test_activities, batch_size = 10, verbose=1, sample_weight=None)
     proml_lib.updateJobConfig(job_number, 'job_execute')
 
