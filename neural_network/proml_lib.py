@@ -1,6 +1,6 @@
 import math
-import urllib as ul
-import urllib2 as ul2
+import urllib.request as req
+import urllib.error as err
 import time
 import json
 import pprint
@@ -27,8 +27,8 @@ def getURL(URL):
     request = None
     while (not have_results):
         try:
-            temp = ul2.urlopen(URL).read()
-        except ul2.HTTPError as e:
+            temp = req.urlopen(URL).read()
+        except err.HTTPError as e:
             return e
         if len(temp) > 0:
             request = temp

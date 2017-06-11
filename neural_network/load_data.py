@@ -3,7 +3,6 @@ import math
 import itertools
 import numpy as np
 import train_promoters as tp
-import proml_lib
 
 
 
@@ -134,6 +133,7 @@ def main(args):
 
     k = 0
     w = 0
+    job_number = 0
     input_file = ''
     activities = ''
     flanking_seq = ''
@@ -167,7 +167,7 @@ def main(args):
             test_promoters = arg
         elif opt == '-e':
             test_promoters_activites = arg
-        elif opt == 'j':
+        elif opt == '-j':
             job_number = arg
 
 

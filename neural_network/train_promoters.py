@@ -1,26 +1,18 @@
+import math
+
 import numpy as np
-import scipy.io
-import sys
-from keras.models import Sequential
+from keras.layers import BatchNormalization
 from keras.layers import Convolution1D
-from keras.layers import MaxPooling1D
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
-from keras.layers import BatchNormalization
-from keras.layers import Activation
-from keras.utils.vis_utils import plot_model
-import pandas as pd
-from keras.utils.np_utils import to_categorical
+from keras.layers import MaxPooling1D
+from keras.models import Sequential
 from keras.optimizers import SGD
-import pydot_ng
 from keras.regularizers import l2
-from keras.constraints import non_neg
-import math
-from proml_lib import proml_lib
+from keras.utils.np_utils import to_categorical
 
-
-
+import proml_lib as proml_lib
 
 
 def process_data(train_promoters, train_activities, test_promoters, test_activities):
@@ -109,8 +101,8 @@ def calculate_scores(test_result):
 
 
 def output_files(loss_array, predictions, loss_output_file_name, pred_output_file_name):
-    loss_output_file = open(loss_output_file_name, "w")
-    pred_output_file = open(pred_output_file_name, "w")
+    loss_output_file = open(loss_output_file_name, "w+")
+    pred_output_file = open(pred_output_file_name, "w+")
 
     loss_output_file.write("epoch" + "\t" + "categorical crossentropy loss")
 
