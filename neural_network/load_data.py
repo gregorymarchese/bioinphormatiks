@@ -3,6 +3,7 @@ import math
 import itertools
 import numpy as np
 import train_promoters as tp
+import proml_lib
 
 
 
@@ -141,7 +142,7 @@ def main(args):
     test_promoters_activites = ''
 
     try:
-        opts, args = getopt.getopt(args, "hk:w:i:a:f:t:e:o:", ["k=", "w=", "input_file=", "flanking_seq=" "output_file="])
+        opts, args = getopt.getopt(args, "hk:w:i:a:f:t:e:o:j:", ["k=", "w=", "input_file=", "flanking_seq=" "output_file="])
     except:
         print('train_data.py -k <kmer size> -w <window size> -i <training promoters> -f <flanking sequences> '
               '-a <training promoter activities> -t <testing promoters> -e <testing promoter activites> '
@@ -166,51 +167,34 @@ def main(args):
             test_promoters = arg
         elif opt == '-e':
             test_promoters_activites = arg
+        elif opt == 'j':
+            job_number = arg
 
-    print("k is: " + str(k))
-    print("w is: " + str(w))
-    print("input_file is: " + str(input_file))
-    print("activities is: " + str(activities))
+
+    print("training promoters file is: " + str(input_file))
+    print("training promoter activities file is: " + str(activities))
     print("flanking seq is: " + str(flanking_seq))
     print("output_file is: " + str(output_file))
-    print("test_promoters_file is: " + str(test_promoters))
-    print("test_promoters_activities_file is: " + str(test_promoters_activites))
+    print("test promoters file is: " + str(test_promoters))
+    print("test promoters activities file is: " + str(test_promoters_activites))
 
     input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq, activities)
 
-    # one_hot_dictionary = create_dictionary(k)
-    #
     test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq, test_promoters_activites)
-    #
-    # max_length = 0
-    # for promoter in input_seq_dict:
-    #     length = len(input_seq_dict[promoter]) - k + 1
-    #     if length > max_length:
-    #         max_length = length
-    #
-    # for promoter in test_promoters_dict:
-    #     length = len(test_promoters_dict[promoter]) - k + 1
-    #     if length > max_length:
-    #         max_length = length
-    #
-    # print("max length is: " + str(max_length))
-    # ids, train_data, train_activities = preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, max_length)
-    # ids, test_data, test_activities = preprocess_data(k,w,test_promoters_dict, one_hot_dictionary, test_activites_dict,
-    #                                                  max_length)
-    #
-    #
-    #
-    #
-    # width = np.shape(train_data[0])[0]
+
 
 
     train_data, train_activities, test_data, test_activities, test_ids = tp.process_data(input_seq_dict, activities_dict,
                                                                                test_promoters_dict, test_activites_dict)
     depth = np.shape(train_data[0])[1]
     print("depth is: " + str(depth))
-    model = tp.convolutional_neural_network(train_data, train_activities, depth)
+    model, loss_array = tp.convolutional_neural_network(train_data, train_activities, depth, job_number)
 
-    tp.test_data(test_data, test_activities, model, test_ids)
+    preds = tp.test_data(test_data, test_activities, model, test_ids, job_number)
+
+    tp.output_files(loss_array, preds, "training_output/" + str(job_number) + ".tsv",
+                    "promoter_output/" + str(job_number) + ".tsv")
+
 
 
 
