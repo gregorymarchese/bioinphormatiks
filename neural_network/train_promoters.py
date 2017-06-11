@@ -82,6 +82,7 @@ def convolutional_neural_network(train_data, train_activities, depth, job_number
     model.compile(loss='categorical_crossentropy', optimizer='adam')
     print("Training....")
     proml_lib.updateJobConfig(job_number, 'model_train')
+    proml_lib.sendMessage(job_number, 'model_train')
     hist = model.fit(train_data, train_activities, batch_size=20, epochs=100, shuffle=True)
     print(hist.history)
 
@@ -100,7 +101,7 @@ def calculate_scores(test_result):
     return score
 
 
-def output_files(loss_array, predictions, loss_output_file_name, pred_output_file_name):
+def output_files(loss_array, predictions, loss_output_file_name, pred_output_file_name, job_number):
     loss_output_file = open(loss_output_file_name, "w+")
     pred_output_file = open(pred_output_file_name, "w+")
 
@@ -112,6 +113,8 @@ def output_files(loss_array, predictions, loss_output_file_name, pred_output_fil
     pred_output_file.write("Promoter" + "\t" + "Predicted Expression")
     for id in predictions:
         pred_output_file.write(str(id) + "\t" + str(predictions[id]))
+
+    proml_lib.sendMessage(job_number, 'complete')
 
 
 

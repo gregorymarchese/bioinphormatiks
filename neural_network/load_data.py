@@ -193,7 +193,7 @@ def main(args):
     preds = tp.test_data(test_data, test_activities, model, test_ids, job_number)
 
     tp.output_files(loss_array, preds, "training_output/" + str(job_number) + ".tsv",
-                    "promoter_output/" + str(job_number) + ".tsv")
+                    "promoter_output/" + str(job_number) + ".tsv", job_number)
 
 
 
