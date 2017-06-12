@@ -90,7 +90,7 @@ def convolutional_neural_network(train_data, train_activities, job_number, epoch
                             input_shape=(np.shape(train_data)[1],4),
                             activity_regularizer=l2(0.01)))
     model.add(Convolution1D(filters=200, kernel_size=4, padding='valid', activation='relu', activity_regularizer=l2(0.01)))
-    model.add(MaxPooling1D(pool_size=30, strides=30))
+    model.add(MaxPooling1D(pool_size=20, strides=20))
     model.add(BatchNormalization())
     model.add(Dropout(0.5))
     model.add(Flatten())
@@ -136,6 +136,7 @@ def output_files(loss_array, predictions, loss_output_file_name, pred_output_fil
         pred_output_file.write(str(id) + "\t" + str(predictions[id]*0.01) + "\n")
 
     proml_lib.sendMessage(job_number, 'complete')
+    proml_lib.updateJobConfig(job_number, 'complete')
 
 
 
