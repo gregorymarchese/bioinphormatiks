@@ -1,0 +1,8 @@
+Options -Indexes
+
+#handle the most common errors
+    ErrorDocument 400 http://proml.marchese.me/error.php?e=400
+    ErrorDocument 401 http://proml.marchese.me/error.php?e=401
+    ErrorDocument 403 http://proml.marchese.me/error.php?e=403
+    ErrorDocument 404 http://proml.marchese.me/error.php?e=404
+    ErrorDocument 500 http://proml.marchese.me/error.php?e=500
