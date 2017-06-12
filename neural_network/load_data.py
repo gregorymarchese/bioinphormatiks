@@ -131,30 +131,26 @@ def preprocess_data(k, w, input_seq_dict, one_hot_dictionary, activities_dict, m
 
 def main(args):
 
-    k = 0
-    w = 0
+
     job_number = 0
     input_file = ''
     activities = ''
     flanking_seq = ''
-    output_file = ''
     test_promoters = ''
     test_promoters_activites = ''
+    epochs=150
 
     try:
-        opts, args = getopt.getopt(args, "hk:w:i:a:f:t:e:o:j:", ["k=", "w=", "input_file=", "flanking_seq=" "output_file="])
+        opts, args = getopt.getopt(args, "hi:a:f:t:y:e:j:", ["input_file=", "activities=", "flanking_seq=" "test_promoters="])
     except:
-        print('train_data.py -k <kmer size> -w <window size> -i <training promoters> -f <flanking sequences> '
+        print('USAGE: train_data.py -k <kmer size> -w <window size> -i <training promoters> -f <flanking sequences> '
               '-a <training promoter activities> -t <testing promoters> -e <testing promoter activites> '
               ' -o <output_file>')
 
     for opt, arg in opts:
         if opt == '-h':
             print('USAGE: python train_data.py -k <kmer size> -w <window size> -i <input_file> -o <output_file>')
-        elif opt == '-k':
-            k = int(arg)
-        elif opt == '-w':
-            w = int(arg)
+            return
         elif opt == '-i':
             input_file = arg
         elif opt == '-f':
@@ -165,34 +161,47 @@ def main(args):
             output_file = arg
         elif opt == '-t':
             test_promoters = arg
-        elif opt == '-e':
+        elif opt == '-y':
             test_promoters_activites = arg
+        elif opt == '-e':
+            epochs = int(arg)
         elif opt == '-j':
             job_number = arg
 
 
-    print("training promoters file is: " + str(input_file))
-    print("training promoter activities file is: " + str(activities))
-    print("flanking seq is: " + str(flanking_seq))
-    print("output_file is: " + str(output_file))
-    print("test promoters file is: " + str(test_promoters))
-    print("test promoters activities file is: " + str(test_promoters_activites))
+    if test_promoters == '':
+        print('USAGE: python train_data.py -t <test_promoters>')
+        print("missing test promoters")
 
-    input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq, activities)
+    elif flanking_seq == '':
+        print('USAGE: python train_data.py -f <flanking_seq.fasta> -t <test_promoters.fasta>')
 
-    test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq, test_promoters_activites)
+    if input_file == '' or activities == '':
+        test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq,
+                                                                      test_promoters_activites)
+        train_data, train_activities, test_data, test_activities, test_ids = tp.process_data({},{},
+                                                                                             test_promoters_dict,
+                                                                                             test_activites_dict)
+        preds = tp.test_data(test_data, test_activities, None, test_ids, job_number)
+        tp.output_files(None, preds, "training_output/" + str(job_number) + ".tsv",
+                    "promoter_output/" + str(job_number) + ".tsv", job_number)
+
+
+    else:
+        input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq,
+                                                                      activities)
+        test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq, test_promoters_activites)
 
 
 
-    train_data, train_activities, test_data, test_activities, test_ids = tp.process_data(input_seq_dict, activities_dict,
+        train_data, train_activities, test_data, test_activities, test_ids = tp.process_data(input_seq_dict, activities_dict,
                                                                                test_promoters_dict, test_activites_dict)
-    depth = np.shape(train_data[0])[1]
-    print("depth is: " + str(depth))
-    model, loss_array = tp.convolutional_neural_network(train_data, train_activities, depth, job_number)
+        depth = np.shape(train_data[0])[1]
+        model, loss_array = tp.convolutional_neural_network(train_data, train_activities, job_number, epochs)
 
-    preds = tp.test_data(test_data, test_activities, model, test_ids, job_number)
+        preds = tp.test_data(test_data, test_activities, model, test_ids, job_number)
 
-    tp.output_files(loss_array, preds, "training_output/" + str(job_number) + ".tsv",
+        tp.output_files(loss_array, preds, "training_output/" + str(job_number) + ".tsv",
                     "promoter_output/" + str(job_number) + ".tsv", job_number)
 
 
