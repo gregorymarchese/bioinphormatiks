@@ -131,7 +131,7 @@ import train_promoters as tp
 
 def main(args):
 
-    
+
     job_number = 0
     input_file = ''
     activities = ''

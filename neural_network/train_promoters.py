@@ -34,6 +34,7 @@ def process_data(train_promoters, train_activities, test_promoters, test_activit
     :return: preprocessed versions of all of the input, and a list indicating the order of promoters inserted in to the
     preprocessed test promoters and activites.
     '''
+
     print("length is: " + str(len(train_activities)))
     train_promoter_array = []
     train_activities_array = []
@@ -106,6 +107,7 @@ def convolutional_neural_network(train_data, train_activities, job_number, epoch
     :param epochs: number of times to iterate over training data
     :return: model and loss array (loss per epoch)
     '''
+
     print("Building model....")
 
     model = Sequential()
@@ -114,6 +116,7 @@ def convolutional_neural_network(train_data, train_activities, job_number, epoch
                             activity_regularizer=l2(0.01)))
     model.add(Convolution1D(filters=200, kernel_size=4, padding='valid', activation='relu', activity_regularizer=l2(0.01)))
     model.add(MaxPooling1D(pool_size=20, strides=20))
+    model.add(MaxPooling1D(pool_size=30, strides=30))
     model.add(BatchNormalization())
     model.add(Dropout(0.5))
     model.add(Flatten())
@@ -148,6 +151,9 @@ def output_files(loss_array, predictions, loss_output_file_name, pred_output_fil
     pred_output_file = open(pred_output_file_name, "w+")
 
     if loss_array != None:
+
+        loss_output_file.write("epoch" + "\t" + "categorical crossentropy loss" + "\n")
+
 
         loss_output_file.write("epoch" + "\t" + "categorical crossentropy loss" + "\n")
 
