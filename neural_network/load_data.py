@@ -185,8 +185,7 @@ def main(args):
         print('USAGE: python train_data.py -f <flanking_seq.fasta> -t <test_promoters.fasta>')
 
     if input_file == '' or activities == '':
-        test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq,
-                                                                      test_promoters_activites)
+        test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq,test_promoters_activites)
         train_data, train_activities, test_data, test_activities, test_ids = tp.process_data({},{},
                                                                                              test_promoters_dict,
                                                                                              test_activites_dict)
