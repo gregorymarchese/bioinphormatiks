@@ -21,6 +21,19 @@ import proml_lib as proml_lib
 
 
 def process_data(train_promoters, train_activities, test_promoters, test_activities):
+    '''
+
+    One hot encodes the input promoter sequences for train and test. One hot encodes the activities to 400 hot vector
+    with 1 occuring at 238th index for value of 2.38.
+
+    :param train_promoters: training promoters
+    :param train_activities: training activities
+    :param test_promoters: test promoters
+    :param test_activities: test activities
+
+    :return: preprocessed versions of all of the input, and a list indicating the order of promoters inserted in to the
+    preprocessed test promoters and activites.
+    '''
     print("length is: " + str(len(train_activities)))
     train_promoter_array = []
     train_activities_array = []
@@ -83,6 +96,16 @@ def process_data(train_promoters, train_activities, test_promoters, test_activit
 
 #Simple conv neural network
 def convolutional_neural_network(train_data, train_activities, job_number, epochs):
+    '''
+
+    Builds keras model convolutional neural network and trains inputted training data.
+
+    :param train_data: train data is the preprocessed promoters to train the net with
+    :param train_activities: preprocessed activities to train net
+    :param job_number: job number on server to send job status updates
+    :param epochs: number of times to iterate over training data
+    :return: model and loss array (loss per epoch)
+    '''
     print("Building model....")
 
     model = Sequential()
@@ -111,16 +134,16 @@ def convolutional_neural_network(train_data, train_activities, job_number, epoch
     return model, loss_array
 
 
-def calculate_scores(test_result):
-    score = 0.0
-    for i in range(len(test_result)):
-        result = test_result[i]
-        score += result*i
-
-    return score
-
-
 def output_files(loss_array, predictions, loss_output_file_name, pred_output_file_name, job_number):
+    '''
+    Outputs files with data from job
+    :param loss_array: loss per epoch of training
+    :param predictions: predicted promoter activities
+    :param loss_output_file_name: file to write loss output to
+    :param pred_output_file_name: file to write predictions to
+    :param job_number: job number to send status updates and emails to server and user
+    :return:
+    '''
     loss_output_file = open(loss_output_file_name, "w+")
     pred_output_file = open(pred_output_file_name, "w+")
 
