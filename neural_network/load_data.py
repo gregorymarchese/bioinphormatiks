@@ -1,6 +1,4 @@
 import sys, getopt
-import math
-import itertools
 import numpy as np
 import train_promoters as tp
 
@@ -8,7 +6,7 @@ import train_promoters as tp
 
 def assemble_sequences(input_file, flanking_seq,  activities):
     '''
-    This fucntion reads from the input files and creates dictionaries for each id
+    This function reads from the input files and creates dictionaries for each id
     Also appends the flanking sequences to promoters
     :param input_file: input promoters file
     :param flanking_seq: flanking seq file
@@ -195,8 +193,7 @@ def main(args):
 
 
     else:
-        input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq,
-                                                                      activities)
+        input_seq_dict, activities_dict = assemble_sequences(input_file, flanking_seq, activities)
         test_promoters_dict, test_activites_dict = assemble_sequences(test_promoters, flanking_seq, test_promoters_activites)
 
 
@@ -210,16 +207,6 @@ def main(args):
 
         tp.output_files(loss_array, preds, "training_output/" + str(job_number) + ".tsv",
                     "promoter_output/" + str(job_number) + ".tsv", job_number)
-
-
-
-
-
-
-
-
-
-
 
 
 
