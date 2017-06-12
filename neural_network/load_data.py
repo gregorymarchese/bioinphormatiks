@@ -6,48 +6,56 @@ import train_promoters as tp
 
 
 
-# def assemble_sequences(input_file, flanking_seq,  activities):
-#     flank_seqs = []
-#     for line in open(flanking_seq, "r"):
-#         if line.startswith(">"):
-#             continue
-#         else:
-#             flank_seqs.append(line)
-#
-#     print("before seq is: " + flank_seqs[0])
-#     print("after seq is: " + flank_seqs[1])
-#
-#     input_seq_dict = {}
-#     input_seqs = open(input_file, "r").read().split("\n")
-#
-#     for i in range(len(input_seqs)):
-#         line = input_seqs[i]
-#         if line.startswith(">"):
-#             rs_id = line.replace(">","")
-#             seq = input_seqs[i+1].replace("N","")
-#             total_seq = flank_seqs[0] + seq + flank_seqs[1]
-#             total_seq = total_seq.replace("\r","").replace("\n","")
-#             input_seq_dict[rs_id] = total_seq
-#         else:
-#             continue
-#
-#     activity_vals = open(activities, "r").read().split("\n")
-#     activities_dict = {}
-#
-#     max_activity = 0
-#     for i in range(len(activity_vals)):
-#         line = activity_vals[i].split("\t")
-#         if len(line) == 2:
-#             id = line[0]
-#             activity = float(line[1])
-#             if activity > max_activity:
-#                 max_activity = activity
-#
-#             activities_dict[id] = activity
-#
-#
-#     return input_seq_dict,activities_dict
-#
+def assemble_sequences(input_file, flanking_seq,  activities):
+    '''
+    This fucntion reads from the input files and creates dictionaries for each id
+    Also appends the flanking sequences to promoters
+    :param input_file: input promoters file
+    :param flanking_seq: flanking seq file
+    :param activities: activities file
+    :return:
+    '''
+    flank_seqs = []
+    for line in open(flanking_seq, "r"):
+        if line.startswith(">"):
+            continue
+        else:
+            flank_seqs.append(line)
+
+    print("before seq is: " + flank_seqs[0])
+    print("after seq is: " + flank_seqs[1])
+
+    input_seq_dict = {}
+    input_seqs = open(input_file, "r").read().split("\n")
+
+    for i in range(len(input_seqs)):
+        line = input_seqs[i]
+        if line.startswith(">"):
+            rs_id = line.replace(">","")
+            seq = input_seqs[i+1].replace("N","")
+            total_seq = flank_seqs[0] + seq + flank_seqs[1]
+            total_seq = total_seq.replace("\r","").replace("\n","")
+            input_seq_dict[rs_id] = total_seq
+        else:
+            continue
+
+    activity_vals = open(activities, "r").read().split("\n")
+    activities_dict = {}
+
+    max_activity = 0
+    for i in range(len(activity_vals)):
+        line = activity_vals[i].split("\t")
+        if len(line) == 2:
+            id = line[0]
+            activity = float(line[1])
+            if activity > max_activity:
+                max_activity = activity
+
+            activities_dict[id] = activity
+
+
+    return input_seq_dict,activities_dict
+
 #
 # def process_activities(activities_dict):
 #     new_activities_dict = {}
