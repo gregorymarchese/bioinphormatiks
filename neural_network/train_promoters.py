@@ -136,6 +136,7 @@ def output_files(loss_array, predictions, loss_output_file_name, pred_output_fil
         pred_output_file.write(str(id) + "\t" + str(predictions[id]*0.01) + "\n")
 
     proml_lib.sendMessage(job_number, 'complete')
+    proml_lib.updateJobConfig(job_number, 'complete')
 
 
 
