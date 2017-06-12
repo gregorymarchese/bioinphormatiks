@@ -204,7 +204,7 @@ def test_data(test_data, test_activities, model, test_ids, job_number):
     for i, pred in enumerate(test_results):
         print( str(test_ids[i]) + "\t" +  str(np.argmax(pred) * 0.01))
 
-        pred_outputs[test_ids[i]] = calculate_scores(pred)
+        pred_outputs[test_ids[i]] = np.argmax(pred) * 0.01
 
     return pred_outputs
 
