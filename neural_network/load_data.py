@@ -37,7 +37,10 @@ def assemble_sequences(input_file, flanking_seq,  activities):
         else:
             continue
 
-    activity_vals = open(activities, "r").read().split("\n")
+    if len(activities) > 0:
+        activity_vals = open(activities, "r").read().split("\n")
+    else:
+        activity_vals = []
     activities_dict = {}
 
     max_activity = 0

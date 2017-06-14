@@ -54,6 +54,8 @@ def process_data(train_promoters, train_activities, test_promoters, test_activit
                 promoter += "A"
             train_promoter_array.append(promoter)
             train_activities_array.append(int(round(train_activities[id], 3) * 100))
+        for id in test_activities:
+            test_activities_array.append(int(round(test_activities[id], 3) * 100))
         preprocessed_train_promoters = np.array(
             [[int(x) for x in s.translate(str.maketrans('ACGT', '0123'))] for s in train_promoter_array])
 
@@ -76,15 +78,16 @@ def process_data(train_promoters, train_activities, test_promoters, test_activit
         for i in range(max_length - len(promoter)):
             promoter+= "A"
         test_promoters_array.append(promoter)
-        test_activities_array.append(int(round(test_activities[id], 3) * 100))
         test_ids.append(id)
 
 
     preprocessed_test_promoters = np.array([[int(x) for x in s.translate(str.maketrans('ACGT', '0123'))] for s in
                                             list(test_promoters_array)])
-    preprocessed_test_activities = np.array([to_categorical(act,400) for act in test_activities_array]).reshape(53,400)
+    if len(test_activities_array) > 0:
+        preprocessed_test_activities = np.array([to_categorical(act,400) for act in test_activities_array]).reshape(53,400)
 
-
+    else:
+        preprocessed_test_activities = []
 
 
     preprocessed_test_promoters = np.asarray([to_categorical(prom,4) for prom in preprocessed_test_promoters], dtype='float32')
@@ -115,7 +118,6 @@ def convolutional_neural_network(train_data, train_activities, job_number, epoch
                             input_shape=(np.shape(train_data)[1],4),
                             activity_regularizer=l2(0.01)))
     model.add(Convolution1D(filters=200, kernel_size=4, padding='valid', activation='relu', activity_regularizer=l2(0.01)))
-    model.add(MaxPooling1D(pool_size=20, strides=20))
     model.add(MaxPooling1D(pool_size=30, strides=30))
     model.add(BatchNormalization())
     model.add(Dropout(0.5))
@@ -190,11 +192,11 @@ def test_data(test_data, test_activities, model, test_ids, job_number):
 
     print(pydot_ng.find_graphviz())
     plot_model(model, to_file='model.png')
-    test = model.evaluate(test_data, test_activities, batch_size = 10, verbose=1, sample_weight=None)
+    #test = model.evaluate(test_data, test_activities, batch_size = 10, verbose=1, sample_weight=None)
     proml_lib.updateJobConfig(job_number, 'job_execute')
 
 
-    print("score is: " + str(test))
+    # print("score is: " + str(test))
 
     test_results = model.predict(test_data)
     print(np.shape(test_results))
